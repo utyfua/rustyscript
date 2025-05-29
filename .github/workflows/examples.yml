@@ -15,11 +15,26 @@ env:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} ${{ matrix.dropLockfile && ' (drop lockfile)' || '' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-13
+          - macos-14
+          - ubuntu-22.04
+          - windows-latest
+        dropLockfile:
+          - true
+          - false
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Remove Cargo.lock
+      if: matrix.dropLockfile
+      run: rm Cargo.lock
 
     - name: worker_pool
       run: cargo run --example worker_pool --features "worker"
