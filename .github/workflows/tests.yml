@@ -11,8 +11,18 @@ env:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} ${{ matrix.dropLockfile && ' (drop lockfile)' || '' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-14
+          - ubuntu-22.04
+          - windows-latest
+        dropLockfile:
+          - true
+          - false
 
     steps:
     - uses: actions/checkout@v4
