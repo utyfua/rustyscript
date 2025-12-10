@@ -1,4 +1,4 @@
-use deno_core::v8::{self, HandleScope};
+use deno_core::v8;
 use serde::Deserialize;
 
 use super::V8Value;
@@ -13,7 +13,7 @@ impl_checker!(FunctionTypeChecker, Function, is_function, |e| {
 });
 
 impl Function {
-    pub(crate) fn as_global(&self, scope: &mut HandleScope<'_>) -> v8::Global<v8::Function> {
+    pub(crate) fn as_global<'a>(&self, scope: &v8::PinScope<'a, '_, ()>) -> v8::Global<v8::Function> {
         self.0.as_global(scope)
     }
 

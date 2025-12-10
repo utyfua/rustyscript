@@ -274,9 +274,8 @@ impl InnerRustyLoader {
     pub fn load(
         inner: Rc<RefCell<Self>>,
         module_specifier: &ModuleSpecifier,
-        maybe_referrer: Option<&ModuleSpecifier>,
-        is_dyn_import: bool,
-        requested_module_type: deno_core::RequestedModuleType,
+        maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+        options: deno_core::ModuleLoadOptions,
     ) -> deno_core::ModuleLoadResponse {
         let module_specifier = module_specifier.clone();
         let maybe_referrer = maybe_referrer.cloned();
@@ -289,14 +288,11 @@ impl InnerRustyLoader {
         }
 
         // Next check the import provider
-        let provider_result = inner.borrow_mut().import_provider.as_mut().and_then(|p| {
-            p.import(
-                &module_specifier,
-                maybe_referrer.as_ref(),
-                is_dyn_import,
-                requested_module_type,
-            )
-        });
+        let provider_result = inner
+            .borrow_mut()
+            .import_provider
+            .as_mut()
+            .and_then(|p| p.import(&module_specifier, maybe_referrer.as_ref(), options));
         if let Some(result) = provider_result {
             return ModuleLoadResponse::Async(
                 async move {

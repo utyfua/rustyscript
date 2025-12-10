@@ -75,16 +75,15 @@ impl ImportProvider for MyImportProvider {
 
     fn import(
         &mut self,
-        specifier: &ModuleSpecifier,
-        _referrer: Option<&ModuleSpecifier>,
-        _is_dyn_import: bool,
-        _requested_module_type: deno_core::RequestedModuleType,
+        module_specifier: &ModuleSpecifier,
+        maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+        options: deno_core::ModuleLoadOptions,
     ) -> Option<Result<String, ModuleLoaderError>> {
-        match specifier.scheme() {
+        match module_specifier.scheme() {
             //
             // static:*, use the static module set
             Self::STATIC_SCHEME => {
-                if let Some(source) = self.static_modules.get(specifier.path()) {
+                if let Some(source) = self.static_modules.get(module_specifier.path()) {
                     // Found, return the source
                     Some(Ok(source.clone()))
                 } else {

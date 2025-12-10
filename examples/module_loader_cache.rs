@@ -40,13 +40,12 @@ impl ImportProvider for MemoryCache {
 
     fn import(
         &mut self,
-        specifier: &ModuleSpecifier,
-        _referrer: Option<&ModuleSpecifier>,
-        _is_dyn_import: bool,
-        _requested_module_type: deno_core::RequestedModuleType,
+        module_specifier: &ModuleSpecifier,
+        _maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+        _options: deno_core::ModuleLoadOptions,
     ) -> Option<Result<String, ModuleLoaderError>> {
         // Return the source code if the module is in the cache
-        self.get(specifier).map(Ok)
+        self.get(module_specifier).map(Ok)
     }
 
     fn post_process(

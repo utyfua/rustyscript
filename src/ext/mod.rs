@@ -40,9 +40,6 @@ pub mod broadcast_channel;
 #[cfg(feature = "cache")]
 pub mod cache;
 
-#[cfg(feature = "console")]
-pub mod console;
-
 #[cfg(feature = "crypto")]
 pub mod crypto;
 
@@ -51,9 +48,6 @@ pub mod fs;
 
 #[cfg(feature = "http")]
 pub mod http;
-
-#[cfg(feature = "url")]
-pub mod url;
 
 #[cfg(feature = "web")]
 pub mod web;
@@ -201,12 +195,6 @@ pub(crate) fn all_extensions(
 
     #[cfg(feature = "webidl")]
     extensions.extend(webidl::extensions(is_snapshot));
-
-    #[cfg(feature = "console")]
-    extensions.extend(console::extensions(is_snapshot));
-
-    #[cfg(feature = "url")]
-    extensions.extend(url::extensions(is_snapshot));
 
     #[cfg(feature = "web")]
     extensions.extend(web::extensions(options.web.clone(), is_snapshot));

@@ -90,18 +90,11 @@ impl ModuleLoader for RustyLoader {
     fn load(
         &self,
         module_specifier: &ModuleSpecifier,
-        maybe_referrer: Option<&ModuleSpecifier>,
-        is_dyn_import: bool,
-        requested_module_type: deno_core::RequestedModuleType,
+        maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+        options: deno_core::ModuleLoadOptions,
     ) -> deno_core::ModuleLoadResponse {
         let inner = self.inner.clone();
-        InnerRustyLoader::load(
-            inner,
-            module_specifier,
-            maybe_referrer,
-            is_dyn_import,
-            requested_module_type,
-        )
+        InnerRustyLoader::load(inner, module_specifier, maybe_referrer, options)
     }
 
     fn get_source_map(&self, file_name: &str) -> Option<Cow<'_, [u8]>> {
@@ -167,8 +160,11 @@ mod test {
         let response = loader.load(
             &specifier,
             None,
-            false,
-            deno_core::RequestedModuleType::None,
+            deno_core::ModuleLoadOptions {
+                is_dynamic_import: false,
+                is_synchronous: true,
+                requested_module_type: deno_core::RequestedModuleType::None,
+            },
         );
         match response {
             ModuleLoadResponse::Async(_) => panic!("Unexpected response"),
@@ -215,12 +211,11 @@ mod test {
         }
         fn import(
             &mut self,
-            specifier: &ModuleSpecifier,
-            _referrer: Option<&ModuleSpecifier>,
-            _is_dyn_import: bool,
-            _requested_module_type: deno_core::RequestedModuleType,
+            module_specifier: &ModuleSpecifier,
+            _maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+            _options: deno_core::ModuleLoadOptions,
         ) -> Option<Result<String, ModuleLoaderError>> {
-            match specifier.as_str() {
+            match module_specifier.as_str() {
                 "test://1" => Some(Ok("console.log('Rock')".to_string())),
                 "test://2" => Some(Ok("console.log('Paper')".to_string())),
                 "test://3" => Some(Ok("console.log('Scissors')".to_string())),
@@ -249,8 +244,11 @@ mod test {
             let response = loader.load(
                 &specifier,
                 None,
-                false,
-                deno_core::RequestedModuleType::None,
+                deno_core::ModuleLoadOptions {
+                    is_dynamic_import: false,
+                    is_synchronous: true,
+                    requested_module_type: deno_core::RequestedModuleType::None,
+                },
             );
             match response {
                 ModuleLoadResponse::Async(future) => {

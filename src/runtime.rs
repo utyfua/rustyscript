@@ -491,7 +491,10 @@ impl Runtime {
     where
         T: serde::de::DeserializeOwned,
     {
-        let function = function.as_global(&mut self.deno_runtime().handle_scope());
+        let function = {
+            deno_core::scope!(scope, self.deno_runtime());
+            function.as_global(scope)
+        };
         let result = self
             .inner
             .call_function_by_ref(module_context, &function, args)?;
@@ -564,7 +567,10 @@ impl Runtime {
     where
         T: deno_core::serde::de::DeserializeOwned,
     {
-        let function = function.as_global(&mut self.deno_runtime().handle_scope());
+        let function = {
+            deno_core::scope!(scope, self.deno_runtime());
+            function.as_global(scope)
+        };
         let result = self
             .inner
             .call_function_by_ref(module_context, &function, args)?;

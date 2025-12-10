@@ -101,9 +101,9 @@ pub enum Error {
     HeapExhausted,
 }
 
-impl From<deno_core::error::JsError> for Error {
-    fn from(err: deno_core::error::JsError) -> Self {
-        Self::JsError(Box::new(err))
+impl From<Box<deno_core::error::JsError>> for Error {
+    fn from(err: Box<deno_core::error::JsError>) -> Self {
+        Self::JsError(err)
     }
 }
 
@@ -239,7 +239,7 @@ map_error!(deno_ast::TranspileError, |e| Error::Runtime(e.to_string()));
 map_error!(deno_core::error::CoreError, |e| {
     let e = e.into_kind();
     match e {
-        CoreErrorKind::Js(js_error) => Error::JsError(Box::new(js_error)),
+        CoreErrorKind::Js(js_error) => Error::JsError(js_error),
         _ => Error::Runtime(e.to_string()),
     }
 });

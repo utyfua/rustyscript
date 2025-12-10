@@ -166,11 +166,6 @@ whitelist!(
         op_event_loop_has_more_work,
         op_get_ext_import_meta_proto,
     ],
-    "deno_console" => [
-        stubs = [],
-
-        op_preview_entries,
-    ],
     "deno_crypto" => [
         stubs = [],
 
@@ -210,18 +205,6 @@ whitelist!(
         op_crypto_export_spki_x448,
         op_crypto_export_pkcs8_x448,
         op_crypto_x25519_public_key,
-    ],
-    "deno_url" => [
-        stubs = [],
-
-        op_url_reparse,
-        op_url_parse,
-        op_url_get_serialization,
-        op_url_parse_with_base,
-        op_url_parse_search_params,
-        op_url_stringify_search_params,
-        op_urlpattern_parse,
-        op_urlpattern_process_match_input,
     ],
     "web_stub" => [
         stubs = [],

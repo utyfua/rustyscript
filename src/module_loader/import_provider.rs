@@ -1,4 +1,4 @@
-use deno_core::{error::ModuleLoaderError, ModuleSource, ModuleSpecifier, RequestedModuleType};
+use deno_core::{error::ModuleLoaderError, ModuleSource, ModuleSpecifier};
 
 /// A trait that can be implemented to modify the behavior of the module loader
 /// Allows for custom schemes, caching, and more granular permissions
@@ -41,10 +41,9 @@ pub trait ImportProvider {
     /// - None: Fall back to the default import behavior
     fn import(
         &mut self,
-        specifier: &ModuleSpecifier,
-        referrer: Option<&ModuleSpecifier>,
-        is_dyn_import: bool,
-        requested_module_type: RequestedModuleType,
+        module_specifier: &ModuleSpecifier,
+        maybe_referrer: Option<&deno_core::ModuleLoadReferrer>,
+        options: deno_core::ModuleLoadOptions,
     ) -> Option<Result<String, ModuleLoaderError>> {
         None
     }

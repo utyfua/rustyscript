@@ -204,7 +204,7 @@
 //! The [`worker::InnerWorker`] trait can be implemented to provide custom worker behavior.
 //!
 //! It also provides a default worker implementation that can be used without any additional setup:
-//! ```ignore
+//! ```
 //! use rustyscript::{Error, worker::{Worker, DefaultWorker, DefaultWorkerOptions}};
 //! use std::time::Duration;
 //!
@@ -212,6 +212,7 @@
 //!     let worker = DefaultWorker::new(DefaultWorkerOptions {
 //!         default_entrypoint: None,
 //!         timeout: Duration::from_secs(5),
+//!         ..Default::default()
 //!     })?;
 //!
 //!     let result: i32 = worker.eval("5 + 5".to_string())?;
@@ -251,8 +252,7 @@
 //! |-------------------|-----------------------------------------------------------------------------------------------------------|------------------|-----------------------------------------------------------------------------------------------|
 //! |`broadcast_channel`|Implements the web-messaging API for Deno                                                                  |**NO**            |`deno_broadcast_channel`, `deno_web`, `deno_webidl`                                            |
 //! |`cache`            |Implements the Cache API for Deno                                                                          |**NO**            |`deno_cache`, `deno_webidl`, `deno_web`, `deno_crypto`, `deno_fetch`, `deno_url`, `deno_net`   |
-//! |`console`          |Provides `console.*` functionality from JS                                                                 |yes               |`deno_console`, `deno_terminal`                                                                |
-//! |`cron`             |Implements scheduled tasks (crons) API                                                                     |**NO**            |`deno_cron`, `deno_console`                                                                    |
+//! |`cron`             |Implements scheduled tasks (crons) API                                                                     |**NO**            |`deno_cron`                                                                                    |
 //! |`crypto`           |Provides `crypto.*` functionality from JS                                                                  |yes               |`deno_crypto`, `deno_webidl`                                                                   |
 //! |`ffi`              |Dynamic library ffi features                                                                               |**NO**            |`deno_ffi`                                                                                     |
 //! |`fs`               |Provides ops for interacting with the file system.                                                         |**NO**            |`deno_fs`, `web`,  `io`                                                                        |
@@ -266,9 +266,9 @@
 //! |`websocket`        |Provides the `WebSocket` API                                                                               |**NO**            |`deno_web`, `deno_websocket`                                                                   |
 //! |`webidl`           |Provides the `webidl` API                                                                                  |yes               |`deno_webidl`                                                                                  |
 //! |                   |                                                                                                           |                  |                                                                                               |
-//! |`default`          |Provides only those extensions that preserve sandboxing                                                    |yes               |`deno_console`, `deno_crypto`, `deno_webidl`, `deno_url`                                       |
+//! |`default`          |Provides only those extensions that preserve sandboxing                                                    |yes               |`deno_crypto`, `deno_webidl`, `deno_url`                                                       |
 //! |`no_extensions`    |Disables all extensions to the JS runtime - you can still add your own extensions in this mode             |yes               |None                                                                                           |
-//! |`all`              |Provides all available functionality                                                                       |**NO**            |`deno_console`, `deno_webidl`, `deno_web`, `deno_net`, `deno_crypto`, `deno_fetch`, `deno_url` |
+//! |`all`              |Provides all available functionality                                                                       |**NO**            |`deno_webidl`, `deno_web`, `deno_net`, `deno_crypto`, `deno_fetch`, `deno_url`                 |
 //! |                   |                                                                                                           |                  |                                                                                               |
 //! |`fs_import`        |Enables importing arbitrary code from the filesystem through JS                                            |**NO**            |None                                                                                           |
 //! |`url_import`       |Enables importing arbitrary code from network locations through JS                                         |**NO**            |`reqwest`                                                                                      |
@@ -338,10 +338,6 @@ pub mod extensions {
     #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
     pub use deno_cache;
 
-    #[cfg(feature = "console")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "console")))]
-    pub use deno_console;
-
     #[cfg(feature = "cron")]
     #[cfg_attr(docsrs, doc(cfg(feature = "cron")))]
     pub use deno_cron;
@@ -369,10 +365,6 @@ pub mod extensions {
     #[cfg(feature = "kv")]
     #[cfg_attr(docsrs, doc(cfg(feature = "kv")))]
     pub use deno_kv;
-
-    #[cfg(feature = "url")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "url")))]
-    pub use deno_url;
 
     #[cfg(feature = "webgpu")]
     #[cfg_attr(docsrs, doc(cfg(feature = "webgpu")))]

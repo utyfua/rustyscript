@@ -6,6 +6,7 @@ use deno_core::{extension, Extension};
 
 use super::ExtensionTrait;
 
+mod console;
 mod encoding;
 mod timers;
 use timers::StartTime;
@@ -13,11 +14,12 @@ use timers::StartTime;
 extension!(
     deno_web,
     ops = [
+        console::op_preview_entries,
         timers::op_now, timers::op_defer,
         encoding::op_base64_decode, encoding::op_base64_atob, encoding::op_base64_encode, encoding::op_base64_btoa,
     ],
     esm_entry_point = "ext:deno_web/init_stub.js",
-    esm = [ dir "src/ext/web_stub", "init_stub.js", "01_dom_exception.js", "02_timers.js", "05_base64.js" ],
+    esm = [ dir "src/ext/web_stub", "init_stub.js", "01_dom_exception.js", "02_timers.js", "05_base64.js", "01_console.js"],
     state = |state| {
         state.put(StartTime::default());
     }

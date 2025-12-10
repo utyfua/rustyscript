@@ -12,14 +12,11 @@ const {
 	Error,
 	ErrorPrototype,
 	ObjectPrototypeIsPrototypeOf,
-} = primordials;
-
-import {
 	getDefaultInspectOptions,
 	getStderrNoColor,
 	inspectArgs,
 	quoteString,
-} from "ext:deno_console/01_console.js";
+} = primordials;
 
 class NotFound extends Error {
 	constructor(msg) {
