@@ -11,6 +11,8 @@ pub fn oops(msg: impl std::fmt::Display) -> PermissionCheckError {
     PermissionCheckError::PermissionDenied(PermissionDeniedError {
         access: msg.to_string(),
         name: "web",
+        custom_message: None,
+        state: deno_permissions::PermissionState::Denied
     })
 }
 
@@ -631,85 +633,3 @@ impl_sys_permission_kinds!(
     HomeDir("homeDir"),
     Inspector("inspector"),
 );
-
-#[derive(Clone, Debug)]
-pub struct PermissionsContainer(pub Arc<dyn WebPermissions>);
-impl deno_web::TimersPermission for PermissionsContainer {
-    fn allow_hrtime(&mut self) -> bool {
-        self.0.allow_hrtime()
-    }
-}
-impl deno_fetch::FetchPermissions for PermissionsContainer {
-    fn check_net_url(
-        &mut self,
-        url: &reqwest::Url,
-        api_name: &str,
-    ) -> Result<(), PermissionCheckError> {
-        self.0.check_url(url, api_name)?;
-        Ok(())
-    }
-
-    fn check_open<'a>(
-        &mut self,
-        path: Cow<'a, Path>,
-        open_access: deno_permissions::OpenAccessKind,
-        api_name: &str,
-    ) -> Result<CheckedPath<'a>, PermissionCheckError> {
-        let read = open_access.is_read();
-        let write = open_access.is_write();
-
-        let p = self
-            .0
-            .check_open(true, read, write, path, api_name)
-            .ok_or(oops("open"))?;
-
-        Ok(CheckedPath::unsafe_new(p))
-    }
-
-    fn check_net_vsock(
-        &mut self,
-        cid: u32,
-        port: u32,
-        api_name: &str,
-    ) -> Result<(), PermissionCheckError> {
-        self.0.check_vsock(cid, port, api_name)?;
-        Ok(())
-    }
-}
-impl deno_net::NetPermissions for PermissionsContainer {
-    fn check_net<T: AsRef<str>>(
-        &mut self,
-        host: &(T, Option<u16>),
-        api_name: &str,
-    ) -> Result<(), PermissionCheckError> {
-        self.0.check_host(host.0.as_ref(), host.1, api_name)?;
-        Ok(())
-    }
-
-    fn check_open<'a>(
-        &mut self,
-        path: Cow<'a, Path>,
-        open_access: deno_permissions::OpenAccessKind,
-        api_name: &str,
-    ) -> Result<CheckedPath<'a>, PermissionCheckError> {
-        let read = open_access.is_read();
-        let write = open_access.is_write();
-
-        let p = self
-            .0
-            .check_open(true, read, write, path, api_name)
-            .ok_or(oops("open"))?;
-
-        Ok(CheckedPath::unsafe_new(p))
-    }
-
-    fn check_vsock(
-        &mut self,
-        cid: u32,
-        port: u32,
-        api_name: &str,
-    ) -> Result<(), PermissionCheckError> {
-        self.0.check_vsock(cid, port, api_name)?;
-        Ok(())
-    }
-}
